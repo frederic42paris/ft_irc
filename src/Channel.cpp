@@ -46,6 +46,17 @@ void Channel::broadcastMessage(std::string msg) //server msg
     }
 }
 
+void Channel::broadcastMessage(const std::string &message, Client *excludeClient)
+{
+	for (std::vector<Client *>::iterator it = clients.begin(); it != clients.end(); ++it)
+	{
+		if (*it != excludeClient)
+		{
+			(*it)->sendMessage(message);
+		}
+	}
+}
+
 void Channel::changeCh_pwd(std::string newCh_pwd)
 {
     Ch_pwd = newCh_pwd;
@@ -89,21 +100,19 @@ void Channel::removeOperator(Client* client)
     }
 }
 
-void Channel::kickClient(Client* client, std::string &reason)
+void Channel::kickClient(Client *client)
 {
-    std::vector<Client *>::iterator it = std::find(clients.begin(), clients.end(), client);
-    if (it != clients.end()) {
-        std::string kickMessage = client->getNickname() + " has been kicked from the channel " + name;
-        
-        if (!reason.empty()) {
-            kickMessage += " (" + reason + ")";
-        }
-        broadcastMessage(kickMessage); // for other clients
-        clients.erase(it);
-        std::cout << "Client " << client->getNickname() << " has been kicked from channel " << name << "!" << std::endl;
-    } else {
-        std::cerr << "Client not found in channel " << name << "!" << std::endl;
-    }
+	std::vector<Client *>::iterator it = std::find(clients.begin(), clients.end(), client);
+	if (it != clients.end())
+	{
+		clients.erase(it);
+		client->removeChannel(this);
+		std::cout << "Client " << client->getNickname() << " has been removed from channel " << name << std::endl;
+	}
+	else
+	{
+		std::cerr << "Client not found in channel " << name << "!" << std::endl;
+	}
 }
 
 void Channel::inviteClient(Client* client)
@@ -297,26 +306,27 @@ bool Channel::isClientInChannel(Client* client) const
 
 void Channel::joinChannel(Client* client, const std::string& password)
 {
-    if (std::find(clients.begin(), clients.end(), client) != clients.end()) {
-        client->sendMessage("Error: You are already in the channel " + name);
+    if (std::find(clients.begin(), clients.end(), client) != clients.end())
+    {
+        client->sendMessage("[Error 443] " + client->getNickname() + " " + name + " : You are already in the channel\n");
         return;
     }
     // check invite
     if (inviteOnly) {
         if (!client->isInvited(client, this))
         {
-            client->sendMessage("Error: You need an invitation to join " + name);
+            client->sendMessage("[Error 473] " + name + " : You need an invitation to join\n");
             return;
         }
     }
     // check password
     if (!Ch_pwd.empty() && Ch_pwd != password) {
-        client->sendMessage("Error: Incorrect password for channel " + name);
+        client->sendMessage("[Error 475] " + name + " : Incorrect channel password\n");
         return;
     }
     // check amount of clients
     if (clients.size() >= static_cast<std::size_t>(userLimits)) {
-        client->sendMessage("Error: Channel is full!");
+        client->sendMessage("[Error 471] " + name + " : Channel is full\n");;
         return;
     }
     //first one in channel
@@ -326,7 +336,8 @@ void Channel::joinChannel(Client* client, const std::string& password)
     }
     clients.push_back(client);
     client->addChannel(this);
-    broadcastMessage(client->getNickname() + " has joined the channel " + name);
+
+    broadcastMessage(":" + client->getNickname() + " JOIN " + name + "\n");
     std::cout << "Client " << client->getNickname() << " successfully joined channel " << name << std::endl;
 }
 
@@ -335,7 +346,7 @@ void Channel::partChannel(Client* client, const std::string& message)
 {
     std::vector<Client*>::iterator it = std::find(clients.begin(), clients.end(), client);
     if (it == clients.end()) {
-        client->sendMessage("Error: You are not in the channel " + name);
+        client->sendMessage(":server 441 " + client->getNickname() + " " + name + " :They aren't on that channel\n");
         return;
     }
     std::string partMessage = client->getNickname() + " has left the channel " + name;

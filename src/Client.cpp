@@ -1,9 +1,16 @@
 #include "../includes/Irc.hpp"
 
-Client::Client(int fd): client_fd(fd), _passwordIsCorrect(0)
+Client::Client(int fd): host(getSystemHostname()), client_fd(fd), _passwordIsCorrect(0)
 // Client::Client(int fd): client_fd(fd)
 {
     recv_buf = "";
+}
+
+std::string Client::getSystemHostname() {
+    char hostname[1024];
+    if (gethostname(hostname, sizeof(hostname)) == 0)
+        return std::string(hostname);
+    return "unknown";
 }
 
 void Client::setFd(int fd){
@@ -20,6 +27,11 @@ void Client::setUsername(const std::string& username)
     usr = username;
 }
 
+void Client::setHostname(const std::string& hostname)
+{
+    host = hostname;
+}
+
 const std::string& Client::getNickname() const
 {
     return (nick);
@@ -29,6 +41,12 @@ const std::string& Client::getUsername() const
 {
     return (usr);
 }
+
+std::string Client::getHostname() const
+{
+    return (host);
+}
+
 void Client::sendMessage(const std::string &message)
 {
     if (client_fd <= 0)

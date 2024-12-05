@@ -84,6 +84,7 @@ void Server::AcceptClient(){
   pollNew.revents = 0;
   _fds.push_back(pollNew);
   // client.do_stuff?
+  client.setHostname(client.getHostname());
   client.setFd(lisFd);
   _clients.push_back(client);
 }
