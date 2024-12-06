@@ -119,12 +119,11 @@ void Channel::inviteClient(Client* client)
 {
     if (std::find(clients.begin(), clients.end(), client) != clients.end())
     {
-        std::cerr << "Error: You are already in the channel " << name << std::endl;
+        std::cerr << "Error: Client " << client->getNickname() << " is already in the channel " << name << "." << std::endl;
         return ;
     }
     clients.push_back(client);
-    std::string inviteMessage = client->getNickname() + " has been invited to the channel.";
-    broadcastMessage(inviteMessage);
+    std::cout << "Client " << client->getNickname() << " has been invited to the channel " << name << "." << std::endl;
 }
 
 void Channel::addInvitedClient(Client* client) {
@@ -185,14 +184,14 @@ void Channel::setMode(const std::string& modeStr, const std::string& value, Clie
 {
     if (modeStr.empty())
     {
-        client->sendMessage("Error: No mode specified for channel " + name);
+        client->sendMessage(":Server 461 MODE :Not enough parameters");
         return;
     }
 
     char operation = modeStr[0]; // '+' or '-'
     if (operation != '+' && operation != '-')
     {
-        client->sendMessage("Error: Mode must start with '+' or '-' in channel " + name);
+        client->sendMessage(":Server 501 :Unknown MODE flag");
         return;
     }
 
@@ -204,24 +203,24 @@ void Channel::setMode(const std::string& modeStr, const std::string& value, Clie
         {
             case 'i': // Invite-only
                 inviteOnly = (operation == '+');
-                client->sendMessage("Invite-only mode " + std::string(inviteOnly ? "enabled" : "disabled") + " in channel " + name);
+                broadcastMessage(":Server MODE " + name + " " + operation + "i");
                 break;
 
             case 't': // Topic restrictions
                 topicRestricted = (operation == '+');
-                client->sendMessage("Topic-restricted mode " + std::string(topicRestricted ? "enabled" : "disabled") + " in channel " + name);
+                broadcastMessage(":Server MODE " + name + " " + operation + "t");
                 break;
 
             case 'k': // Channel password
                 if (operation == '+')
                 {
                     Ch_pwd = value;
-                    client->sendMessage("Channel password set to '" + value + "' in channel " + name);
+                    broadcastMessage(":Server MODE " + name + " " + operation + "k " + value);
                 }
                 else
                 {
                     Ch_pwd.clear();
-                    client->sendMessage("Channel password removed in channel " + name);
+                    broadcastMessage(":Server MODE " + name + " " + operation + "k");
                 }
                 break;
 
@@ -230,38 +229,26 @@ void Channel::setMode(const std::string& modeStr, const std::string& value, Clie
                 Client* targetClient = server.findClientByNickname(value);
                 if (!targetClient)
                 {
-                    client->sendMessage("Error: Client " + value + " not found for mode 'o' in channel " + name);
+                    client->sendMessage(":Server 401 " + value + " :No such nick/channel");
                     break;
                 }
 
                 if (operation == '+')
                 {
-                    if (!isOperator(client))
-                    {
-                        client->sendMessage("Error: You are not an operator in this channel.");
-                        break;
-                    }
-
                     if (!isOperator(targetClient))
                     {
                         addOperator(targetClient);
-                        client->sendMessage("Client " + value + " granted operator privileges in channel " + name);
+                        broadcastMessage(":Server MODE " + name + " " + operation + "o " + value);
                     }
                     else
                     {
-                        client->sendMessage("Client " + value + " is already an operator in channel " + name);
+                        client->sendMessage(":Server 443 " + value + " " + name + " :is already an operator");
                     }
                 }
                 else
                 {
-                    if (!isOperator(client))
-                    {
-                        client->sendMessage("Error: You are not an operator in this channel.");
-                        break;
-                    }
-
                     removeOperator(targetClient);
-                    client->sendMessage("Client " + value + " operator privileges removed in channel " + name);
+                    broadcastMessage(":Server MODE " + name + " " + operation + "o " + value);
                 }
                 break;
             }
@@ -270,21 +257,22 @@ void Channel::setMode(const std::string& modeStr, const std::string& value, Clie
                 if (operation == '+')
                 {
                     userLimits = stringToInt(value);
-                    client->sendMessage("User limit set to " + intToString(userLimits) + " in channel " + name);
+                    broadcastMessage(":Server MODE " + name + " " + operation + "l " + intToString(userLimits));
                 }
                 else
                 {
                     userLimits = -1; // Remove limit
-                    client->sendMessage("User limit removed in channel " + name);
+                    broadcastMessage(":Server MODE " + name + " " + operation + "l");
                 }
                 break;
 
             default:
-                client->sendMessage("Error: Unknown mode '" + std::string(1, mode) + "' in channel " + name);
+                client->sendMessage(":Server 472 " + std::string(1, mode) + " :is unknown mode char to me");
                 break;
         }
     }
 }
+
 
 std::string Channel::getMode(const std::string& mode) const
 {
