@@ -287,28 +287,16 @@ bool Channel::isClientInChannel(Client* client) const
 void Channel::joinChannel(Client* client, const std::string& password)
 {
     if (std::find(clients.begin(), clients.end(), client) != clients.end())
-    {
-        client->sendMessage(":localhost 443 " + client->getNickname() + " " + name + " : You are already in the channel\n");
-        return;
-    }
+        return client->sendMessage(":localhost 443 " + client->getNickname() + " " + name + " : You are already in the channel\n");
 
     if (inviteOnly && !client->isInvited(client, this))
-    {
-        client->sendMessage(":localhost 473 " + name + " : You need an invitation to join\n");
-        return;
-    }
+        return client->sendMessage(":localhost 473 " + name + " : You need an invitation to join\n");
 
     if (!Ch_pwd.empty() && Ch_pwd != password)
-    {
-        client->sendMessage(":localhost 475 " + name + " : Incorrect channel password\n");
-        return;
-    }
+        return client->sendMessage(":localhost 475 " + name + " : Incorrect channel password\n");
 
     if (userLimits > 0 && clients.size() >= static_cast<std::size_t>(userLimits))
-    {
-        client->sendMessage(":localhost 471 " + name + " : Channel is full\n");
-        return;
-    }
+        return client->sendMessage(":localhost 471 " + name + " : Channel is full\n");
 
     // Assign operator privileges if this is the first client
     if (clients.empty())

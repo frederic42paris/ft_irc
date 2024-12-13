@@ -75,12 +75,10 @@ std::string Client::getHostname() const
 
 void Client::sendMessage(const std::string &message)
 {
-    if (client_fd <= 0)
-    {
+    if (client_fd <= 0){
         std::cerr << "Error: Invalid client_fd for client." << std::endl;
         return;
     }
-    
     std::string formattedMessage = message + "\r\n";
     if (send(client_fd, formattedMessage.c_str(), formattedMessage.length(), 0) == -1)
         perror("send");

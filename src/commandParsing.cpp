@@ -193,7 +193,7 @@ Channel* Server::findChannelByName(const std::string& channelName)
         if (this->_channels[j].getName() == channelName)
             return (&this->_channels[j]);
     }
-    return (NULL);
+    return NULL;
 }
 Client* Server::findClientByNickname(const std::string& nickname)
 {
