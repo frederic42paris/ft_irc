@@ -14,6 +14,12 @@ void Server::cmdMode(int i, std::vector<std::string> string_array)
         return;
     }
 
+	if (string_array[0] == "MODE" && string_array[1] == _clients[i - 1].getNickname() && string_array[2] == "+i" && string_array.size() == 3)
+	{
+		// this->_clients[i - 1].sendMessage("Error : empty channel \r\n");
+		return;
+	}
+
     std::string channelName = string_array[1];
     std::string mode = (string_array.size() > 2) ? string_array[2] : "";
     std::string extra_cmd = (string_array.size() > 3) ? string_array[3] : "";

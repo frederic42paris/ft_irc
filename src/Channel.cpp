@@ -114,6 +114,11 @@ std::vector<Client> Channel::getClients(void)
 	return clients;
 }
 
+// std::vector<Channel> Server::getChannels(void)
+// {
+// 	return _channels;
+// }
+
 bool Channel::getTopicRestricted() const
 {
     return (topicRestricted);

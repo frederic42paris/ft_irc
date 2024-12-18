@@ -60,6 +60,7 @@ class Server{
         // Channel findChannelByName(const std::string& channelName);
         // Client findClientByNickname(const std::string& nickname);
         void setMode(const std::string& mode, const std::string& value);
+		// std::vector<Channel> getChannels(void);
 
     private:
         // VARIABLES:

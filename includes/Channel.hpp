@@ -65,8 +65,8 @@ class Channel{
         void setMode(const std::string& modeStr, const std::string& value, const Client &client);
         std::string getMode(const std::string& mode) const;
         bool getTopicRestricted() const;
-
-
+		
+		
 		std::vector<Client> getClients(void);
 };
 
