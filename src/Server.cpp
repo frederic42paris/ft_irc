@@ -108,6 +108,9 @@ void Server::ReceiveData(int fd, int i){
     // buf[recData] = 0;
     // std::string buffer(buf);
     // commandParsing(i, buf);
+	std::string bufer = buf;
+	if (bufer == "\r\n")
+		return;
     bufferParsing(i, buf);
 	// (void)i;
   }
