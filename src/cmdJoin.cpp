@@ -44,15 +44,20 @@ void	Server::cmdJoin(int i, std::vector<std::string> string_array)
         channel->addOperator(this->_clients[i - 1]);
         std::cout << "Client " << this->_clients[i - 1].getNickname() << " added as operator to channel " << channelName << std::endl;
         
-        std::string msg = ":" + this->_clients[i - 1].getNickname() + " JOIN " + string_array[1] + "\r\n";
+        std::string msg = ":" + this->_clients[i - 1].getNickname() + "!" + this->_clients[i - 1].getUsername() + "@localhost JOIN " + string_array[1] + "\r\n";
         std::cout << msg;
         send(this->_clients[i - 1].getFd(), msg.c_str(), msg.length(), 0);
 
-        std::string msg2 = ":localhost 353 " + this->_clients[i - 1].getNickname() + " = " + string_array[1] + " :@" + this->_clients[i - 1].getNickname() + "\r\n";
+        std::string msg1 = ":localhost 331 " + this->_clients[i - 1].getNickname() + "!" + this->_clients[i - 1].getUsername() + "@localhost " + string_array[1] + " :topic not set\r\n";
+        std::cout << msg1;
+        send(this->_clients[i - 1].getFd(), msg1.c_str(), msg1.length(), 0);
+    
+
+        std::string msg2 = ":localhost 353 " + this->_clients[i - 1].getNickname() + "!" + this->_clients[i - 1].getUsername() + "@localhost = " + string_array[1] + " :@" + this->_clients[i - 1].getNickname() + "\r\n";
         std::cout << msg2;
         send(this->_clients[i - 1].getFd(), msg2.c_str(), msg2.length(), 0);
 
-        std::string msg3 = ":localhost 366 " + this->_clients[i - 1].getNickname() + " " + string_array[1] + " :End of /NAMES list\r\n";
+        std::string msg3 = ":localhost 366 " + this->_clients[i - 1].getNickname() + "!" + this->_clients[i - 1].getUsername() + "@localhost " + string_array[1] + " :End of /NAMES list\r\n";
         std::cout << msg3;
         send(this->_clients[i - 1].getFd(), msg3.c_str(), msg3.length(), 0);
     }
@@ -132,13 +137,13 @@ void Channel::joinChannel(Client &client, const std::string& password)
 
     // Add client to the channel
     clients.push_back(client);
-    client.addChannel(*this);
+    // client.addChannel(*this);
     // addClient(client);
 
     // Notify all clients in the channel about the join event
     for (std::size_t k = 0; k < clients.size(); ++k)
     {
-        std::string joinMsg = ":" + client.getNickname() + " JOIN " + name + "\r\n";
+        std::string joinMsg = ":" + client.getNickname() + "!" + client.getUsername() + "@localhost JOIN " + name + "\r\n";
         std::cout << joinMsg;
         send(clients[k].getFd(), joinMsg.c_str(), joinMsg.length(), 0);
     }
@@ -151,7 +156,12 @@ void Channel::joinChannel(Client &client, const std::string& password)
 	}
     // Send NAMES list to the joining client
     // std::string namesList = ":localhost 353 " + client.getNickname() + " = " + name + " :@";
-	std::string namesList = ":localhost 353 " + client.getNickname() + " = " + name + " :";
+	
+    std::string msg1 = ":localhost 331 " + client.getNickname() + "!" + client.getUsername() + "@localhost " + name + " :topic not set\r\n";
+    std::cout << msg1;
+    send(client.getFd(), msg1.c_str(), msg1.length(), 0);
+    
+    std::string namesList = ":localhost 353 " + client.getNickname() + "!" + client.getUsername() + "@localhost = " + name + " :";
     for (std::size_t j = 0; j < clients.size(); ++j)
     {
         if (j > 0)
@@ -165,7 +175,7 @@ void Channel::joinChannel(Client &client, const std::string& password)
     send(client.getFd(), namesList.c_str(), namesList.length(), 0);
 
     // Send end of NAMES list
-    std::string endNamesMsg = ":localhost 366 " + client.getNickname() + " " + name + " :End of /NAMES list\r\n";
+    std::string endNamesMsg = ":localhost 366 " + client.getNickname() + "!" + client.getUsername() + "@localhost " + name + " :End of /NAMES list\r\n";
     std::cout << endNamesMsg;
     send(client.getFd(), endNamesMsg.c_str(), endNamesMsg.length(), 0);
 

@@ -47,7 +47,7 @@ class Channel{
         void changeCh_pwd(std::string newCh_pwd);
         //client join&leave channel(s)
         void joinChannel(Client &client, const std::string& password);
-        void partChannel(Client &client, const std::string& message = "");
+        void partChannel(Client &client, int i);
         //channel operators commands:
         bool isOperator(const Client &client) const;
         void addOperator(const Client &client);
@@ -68,6 +68,8 @@ class Channel{
 		
 		
 		std::vector<Client> getClients(void);
+       
+
 };
 
 
