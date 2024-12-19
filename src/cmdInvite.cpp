@@ -10,10 +10,6 @@ void	Server::cmdInvite(int i, std::vector<std::string> string_array)
     for (std::string::size_type i = 0; i < string_array.size(); i++)
         std::cout << YELLOW << string_array[i] << std::endl;
     std::cout << RESET;
-    // If the user doesn't specify the channel, IRSSI will append the current channel the user is in
-    // to the INVITE command 
-    // e.g. /INVITE yu-chen (from user in channel #a) --> string_array ==  INVITE yu-chen #a
-    // CONDITIONAL JUMPS IN CMDINVITE
     if (string_array.size() < 3)
     {
         this->_clients[i - 1].sendMessage(":localhost 461 " + _clients[i - 1].getNickname() + " INVITE :Not enough parameters\r\n");
@@ -45,15 +41,7 @@ void	Server::cmdInvite(int i, std::vector<std::string> string_array)
 		return ;
 	}
 
-    // Channel channel = findChannelByName(channelName);
-    // if (channel == Channel())
-    // {
-    //     this->_clients[i - 1].sendMessage(":localhost 403 " + channelName + " :No such channel");
-    //     return;
-    // }
-
     std::cout << "Checking if client " << this->_clients[i - 1].getName() << " is an operator in channel " << channelName << std::endl;
-    // std::cout << "Client address in cmdInvite: " << &this->_clients[i - 1] << std::endl;
     if (!channel->isOperator(this->_clients[i - 1]))
     {
         this->_clients[i - 1].sendMessage(":localhost 482 " + _clients[i - 1].getNickname() + " " + channelName + " :You're not a channel operator\r\n");
@@ -76,17 +64,9 @@ void	Server::cmdInvite(int i, std::vector<std::string> string_array)
         this->_clients[i - 1].sendMessage(":localhost 401 " + _clients[i - 1].getNickname() + " " + targetNickname + " :No such nick\r\n");
         return;
     }
-    // if (std::find(channel->getClients().begin(), channel->getClients().end(), *targetClient) != channel->getClients().end())
-    // {
-    //     this->_clients[i - 1].sendMessage(":localhost 443 " + _clients[i - 1].getNickname() + " " + targetClient->getNickname() + " " + channel->getName() + " :is already on channel\r\n");
-    //     return ;
-    // } 
     channel->inviteClient(_clients[i - 1], *targetClient);
-    // this->_clients[i - 1].sendMessage(":localhost 341 " + this->_clients[i - 1].getNickname() + " " + targetNickname + " " + channelName + "\r\n");
-    // targetClient->sendMessage(":localhost :You have been invited to join " + channelName + " by " + this->_clients[i - 1].getNickname() + "\r\n");
 }
 
-// void Channel::inviteClient(Client &client)
 void Channel::inviteClient(Client &client, Client &targetclient)
 {
     if (std::find(clients.begin(), clients.end(), targetclient) != clients.end())

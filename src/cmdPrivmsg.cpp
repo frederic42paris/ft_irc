@@ -78,8 +78,6 @@ void Server::userMsg(int i, std::vector<std::string> string_array, std::string b
 	{
 		if ((*it).getNickname() == string_array[1])
 		{
-			// std::string msg = ":"  + this->_clients[i - 1].getNickname() + "!" + this->_clients[i - 1].getUsername() +  "@localhost PRIVMSG " + string_array[1] + " " + message + "\r\n";
-			// std::string msg = ":" + this->_clients[i - 1].getNickname() + " PRIVMSG " + string_array[1] + " " + message + "\r\n";
 			std::string msg = this->_clients[i - 1].getNickname() + " " + message + "\r\n";
 			send((*it).getFd(), msg.c_str(), msg.length(), 0);
 		}

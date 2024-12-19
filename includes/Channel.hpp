@@ -10,11 +10,7 @@ class Server;
 
 class Channel{
     private:
-        // Server& server;
         std::string name;
-        // std::vector<Client*> clients;
-        // std::vector<Client*> invitedClients;
-        // std::vector<Client*> operators;
         std::vector<Client> clients;
         std::vector<Client> invitedClients;
         std::vector<Client> operators;
@@ -36,9 +32,6 @@ class Channel{
         {
             return !(*this == other);
         }
-        // Channel(const Channel &src);
-        // Channel &operator=(const Channel &src);
-        // Channel(const std::string& n, Server& srv);
         const std::string& getName() const;
         void addClient(const Client &client);
         void removeClient(const Client &client);
@@ -54,7 +47,6 @@ class Channel{
         void removeOperator(const Client &client);
         void kickClient(Client &client);
         void inviteClient(Client &client, Client &targetclient);
-        // void inviteClient(Client &client);
         void addInvitedClient(const Client &client);
         void removeInvitedClient(const Client &client);
         bool isClientInChannel(const Client &client) const;

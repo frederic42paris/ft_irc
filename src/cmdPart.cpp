@@ -13,12 +13,6 @@ void	Server::cmdPart(int i, std::vector<std::string> string_array) //parameter: 
     }
 	std::string &channelName = string_array[1]; //for now only 1 channel as parameter allowed
 	std::string reason = string_array.size() > 2 ? string_array[2] : "";
-	// if (!isValidChannelName(channelName))
-	// {
-	// 	this->_clients[i - 1].sendMessage(":localhost 403 " + _clients[i - 1].getNickname() + " " + channelName + " :No such channel\r\n");
-	// 	return ;
-	// }
-	// Channel channel = findChannelByName(channelName);
 	Channel* channel = NULL;
     for (std::vector<Channel>::iterator it = _channels.begin(); it != _channels.end(); ++it)
     {
@@ -39,8 +33,7 @@ void	Server::cmdPart(int i, std::vector<std::string> string_array) //parameter: 
 		this->_clients[i - 1].sendMessage(":localhost 442 " + _clients[i - 1].getNickname() + " " + channelName + " :You aren't on that channel\r\n");
 		return ;
 	}
-	channel->partChannel(_clients[i - 1], reason); //handle in channel
-	//for critical
+	channel->partChannel(_clients[i - 1], reason);
 	channel->broadcastMessage(
     USER_ID(_clients[i - 1].getNickname(), _clients[i - 1].getUsername()) + " PART " + channelName + (reason.empty() ? "\r\n" : " :" + reason + "\r\n"),
     _clients[i - 1]);
@@ -69,18 +62,15 @@ void Channel::partChannel(Client& client, const std::string& reason)
     {
 		std::string Reason = reason.empty() ? "No reason provided" : reason;
 
-        // Ensure username and nickname are valid
         if (client.getNickname().empty() || client.getUsername().empty()) {
             std::cerr << "Error: Client " << client.getNickname() << " has invalid nickname or username.\n";
             return;
         }
         client.removeChannel(*this);
         client.sendMessage("You have parted from channel " + name + "\n");
-		// client.sendMessage(USER_ID(client.getNickname(), client.getUsername()) + " PART " + name + " :" + Reason + "\r\n");
         client.sendMessage(USER_ID(client.getNickname(), client.getUsername()) 
                    + " PART " + name 
                    + (reason.empty() ? "\r\n" : " :" + reason + "\r\n"));
-		// Debug statement to check client after parting
         std::cout << "Client " << client.getNickname() << " has parted from channel " << name << std::endl;
         clients.erase(it);
 		removeInvitedClient(client);

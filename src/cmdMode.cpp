@@ -50,7 +50,7 @@ void Server::cmdMode(int i, std::vector<std::string> string_array)
     }
 
     channel->setMode(mode, extra_cmd, curr);
-    curr.sendMessage("Mode updated successfully."); // keep?
+    curr.sendMessage("Mode updated successfully.");
 }
 
 std::string Channel::getMode(const std::string& mode) const
@@ -94,7 +94,6 @@ void Channel::setMode(const std::string& modeStr, const std::string& value, cons
         return;
     }
 
-    // Apply modes one by one
     for (size_t i = 1; i < modeStr.size(); ++i)
     {
         char mode = modeStr[i];
@@ -138,16 +137,6 @@ void Channel::setMode(const std::string& modeStr, const std::string& value, cons
             case 'o': // Operator privileges
             {
                 Client* targetClient = NULL;
-
-				// for (size_t j = 0; j < this->getClients().size(); ++j)
-				// {
-				// 	if (this->getClients()[j].getNickname() == value)
-				// 	{
-				// 		targetClient = &this->getClients()[j];
-				// 		break;
-				// 	}
-				// }
-
 				for (std::vector<Client>::iterator it = clients.begin(); it != clients.end(); ++it)
 				{
 					if (it->getNickname() == value)
@@ -221,13 +210,10 @@ void Channel::setMode(const std::string& modeStr, const std::string& value, cons
                 client.sendMessage(":localhost 472 " + cliname + std::string(1, mode) + " :is unknown mode char to me" + "\r\n");
                 continue;
         }
-
-        // Send standard IRC mode message
-        client.sendMessage(modeMessage + "\r\n");
+		
+		broadcastMessage(modeMessage + "\r\n");
+        // client.sendMessage(modeMessage + "\r\n");
 		std::cout << YELLOW << modeMessage << "\n" << feedback << RESET << std::endl;
-        // broadcastMessage(modeMessage, client);
-
-        // Send intuitive feedback to the client
         client.sendMessage(":localhost NOTICE " + cliname + " :" + feedback + "\r\n");
     }
 }

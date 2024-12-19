@@ -8,7 +8,6 @@ class Client;
 
 class Server{
     public:
-        // Server(){};
         Server(int, std::string);
         ~Server(){};
 
@@ -55,11 +54,8 @@ class Server{
 		int		checkStringFormat(std::string str);
 		void 	channelMsg(int i, std::vector<std::string> string_array, std::string buffer);
 		void 	userMsg(int i, std::vector<std::string> string_array, std::string buffer);
-        //YUMI
-        bool isValidChannelName(const std::string& channelName);
-        // Channel findChannelByName(const std::string& channelName);
-        // Client findClientByNickname(const std::string& nickname);
-        void setMode(const std::string& mode, const std::string& value);
+        bool 	isValidChannelName(const std::string& channelName);
+        void 	setMode(const std::string& mode, const std::string& value);
 
     private:
         // VARIABLES:
@@ -73,7 +69,6 @@ class Server{
         std::vector<struct pollfd> _fds;
         std::vector<Client> _clients;
         std::vector<Channel> _channels;
-		// std::vector<Channel *> _channels;
 };
 
 #endif /*SERVER_HPP*/

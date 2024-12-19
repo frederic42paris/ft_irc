@@ -15,9 +15,6 @@ void Server::cmdPing(int i, std::vector<std::string> string_array){
 	}	
 	else
 	{
-        // _lastPing = string_array[1];
         cmdPong(i, string_array[1]);
-		// std::string msg = "success : Ping is received\r\n";
-		// send(this->_clients[i - 1].getFd(), msg.c_str(), msg.length(), 0);
 	}	
 }

@@ -1,9 +1,5 @@
 #include "../includes/Server.hpp"
 
-// NEXT
-// accept new clients
-// receive data from clients
-
 int Server::_sig = 0;
 
 Server::Server(int port, std::string pwd):_port(port),_pwd(pwd),_fd(-1),_lastPing(""){}
@@ -23,7 +19,6 @@ void Server::InitServer(){
   while (_sig == 0){
     if ((poll(&_fds[0], _fds.size(), -1) == -1) && _sig == 0)
       throw ErrThrow("Poll error");
-    // std::cout << "hi" << std::endl;
     for (size_t i = 0; i < _fds.size(); i++){
       if (_sig == 0 && (_fds[i].revents & POLLIN)){
         if (_fds[i].fd == _fd)
@@ -37,7 +32,6 @@ void Server::InitServer(){
 }
 
 void Server::InitSockets(){
-  // CREATING A SOCKET
   struct sockaddr_in addr;
   addr.sin_family = AF_INET;
   addr.sin_addr.s_addr = INADDR_ANY;
@@ -83,33 +77,21 @@ void Server::AcceptClient(){
   pollNew.events = POLLIN;
   pollNew.revents = 0;
   _fds.push_back(pollNew);
-  // client.do_stuff?
-//   client.setHostname(client.getHostname());
   client.setFd(lisFd);
   _clients.push_back(client);
 }
 
 void Server::ReceiveData(int fd, int i){
-  // (void)i;
   char buf[1024] = {0};
   ssize_t recData = recv(fd, buf, sizeof(buf) - 1, 0);
   if (recData <= 0){
     CloseClients(fd);
     close(fd);
-    // maybe put close in closeClients?
   }
   else{
-    // PARSE FOR "PING:<num>"
-    // REPLY "PONG:<num>"
-    // buf[recData] = 0;
-    // parse?
+
     std::cout << PURPLE << "Client["<<fd<<"]: "<< RESET << buf; 
-    // std::string buffer(buf);
-    // buf[recData] = 0;
-    // std::string buffer(buf);
-    // commandParsing(i, buf);
     bufferParsing(i, buf);
-	// (void)i;
   }
 }
 

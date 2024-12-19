@@ -38,9 +38,12 @@ void Channel::addClient(const Client &client)
 
 void Channel::broadcastMessage(const std::string& message)
 {
+	int i = 0;
     for (std::vector<Client>::iterator it = clients.begin(); it != clients.end(); ++it)
     {
+		std::cout << RED << i << ": " << it->getNickname() << RESET <<  std::endl;
         it->sendMessage(message);
+		i++;
     }
 }
 
@@ -73,11 +76,6 @@ bool Channel::isOperator(const Client &client) const
 
 void Channel::addOperator(const Client &client)
 {
-    // if (client == NULL)
-    // {
-    //     std::cerr << "Error: Cannot add a null client as operator." << std::endl;
-    //     return;
-    // }
     if (!isOperator(client))
     {
         operators.push_back(client);

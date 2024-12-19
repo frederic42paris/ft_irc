@@ -14,10 +14,7 @@ class Client{
         std::string usr;
         std::string host;
         std::string buffer; // take the message until \r\n
-        // std::vector<Channel*> channels;
-        // std::vector<Channel*> joinedChannels;
         std::vector<Channel> channels;
-        // std::vector<Channel> joinedChannels;
         int client_fd;
 		int _passwordIsCorrect;
         int _isRegistered;
@@ -40,7 +37,6 @@ class Client{
         void setIsLogged(void);
         int getIsLogged(void);
 		void updateBuffer(const std::string);
-		// std::string getBuffer();
 		void clearBuffer();
 		void setOldNick(const std::string& username);
         void setIsRegistered(void);
@@ -48,7 +44,6 @@ class Client{
         const std::string& getNickname() const;
         const std::string& getUsername() const;
 		const std::string& getOldNick() const;
-        // void setHostname(const std::string& hostname);
         std::string getHostname() const;
         void sendMessage(const std::string &message) const;
         void addChannel(const Channel &ch);
@@ -56,13 +51,11 @@ class Client{
         void Send();
         int getFd() const;
         bool isInvited(const Client &client, const Channel &channel) const;
-        // std::string getSystemHostname();
         
 		void setPasswordIsCorrect(void);
 		int getPasswordIsCorrect(void);
 		void setBuffer(std::string);
 		std::string &	getBuffer(void);
-        // void Recv();
 
 		std::string getName(void) const;
 };

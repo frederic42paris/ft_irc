@@ -5,13 +5,6 @@ Client::Client(int fd): nick("*"),oldnick(""),usr(""),host("localhost"),buffer("
 	std::cout << GREEN << host << std::endl;
 }
 
-// std::string Client::getSystemHostname() {
-//     char hostname[1024];
-//     if (gethostname(hostname, sizeof(hostname)) == 0)
-//         return std::string(hostname);
-//     return "unknown";
-// }
-
 void Client::setFd(int fd){
     client_fd = fd;
 }
@@ -30,11 +23,6 @@ void Client::setOldNick(const std::string& oldnickname)
 {
     oldnick = oldnickname;
 }
-
-// void Client::setHostname(const std::string& hostname)
-// {
-//     host = hostname;
-// }
 
 const std::string& Client::getNickname() const
 {
@@ -64,7 +52,6 @@ void Client::sendMessage(const std::string &message) const
         return;
     }
     
-    // std::string formattedMessage = message + "\r\n";
     std::cout << "Sending message to client_fd " << client_fd << ": " << message << std::endl;
     if (send(client_fd, message.c_str(), message.length(), 0) == -1)
         perror("send");
