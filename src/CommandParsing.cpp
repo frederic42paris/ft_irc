@@ -42,7 +42,7 @@ void	Server::lineParsing(std::string line, int i)
 	{
 		line_splitted.push_back(tmp);
 	}
-	if (line == "CAP LS")
+	if (line == "CAP LS 302")
 		cmdCap(i);
 	else if (line_splitted[0] == "PASS")
 		cmdPass(i, line_splitted);

@@ -15,7 +15,7 @@ void	Server::cmdQuit(int i)
 	// 	clients = it->getClients();
 	// 	for (std::vector<Client>::iterator iter = clients.begin(); iter != clients.end(); ++it){
 	// 		if (curr->getNickname() == iter->getNickname()){
-	// 			it->broadcastMessage(USER_ID(curr->getNickname(), curr->getUsername()) \
+				// it->broadcastMessage(USER_ID(curr->getNickname(), curr->getUsername())
 	// 			+ " QUIT :Quit: " + reason + "\r\n");
 	// 			break;
 	// 		}
